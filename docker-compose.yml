@@ -1,0 +1,38 @@
+version: "3.8"
+services:
+  spark-master:
+    image: bitnami/spark:latest
+    container_name: spark-master
+    environment:
+      - SPARK_MODE=master
+    ports:
+      - "7077:7077"
+      - "8080:8080"
+  spark-worker:
+    image: bitnami/spark:latest
+    container_name: spark-worker
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+    depends_on:
+      - spark-master
+  api:
+    build:
+      context: ./api
+    container_name: bitcoin-api
+    depends_on:
+      - spark-master
+    volumes:
+      - ./api:/app
+    command: python app.py
+    ports:
+      - "5000:5000"
+  react:
+    build:
+      context: ./frontend
+    container_name: bitcoin-dashboard
+    volumes:
+      - ./frontend:/app
+    command: npm start
+    ports:
+      - "3000:3000"
