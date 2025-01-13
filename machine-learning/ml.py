@@ -18,7 +18,7 @@ df = df[['close']]
 df.dropna(inplace=True)
 
 
-n_lags = 7  
+n_lags = 10  
 for i in range(1, n_lags + 1):
     df[f'lag_{i}'] = df['close'].shift(i)
 
